@@ -14,7 +14,9 @@ An AWS EC2 insance has its own properties which can be used to connect to it sec
 
 These properties can be found in the Instances page of AWS Management Console. We will need three things to connect to the instance: a PEM key pair file (from Step 1), Instance username and Instance IP. Once you have these, run the below command in command prompt (Windows users: make sure you have enabled OpenSSH Client/Server optional feature in Settings)
 
-```ssh -i "hive_docker_setup.pem" ec2-user@my-aws-ip-dns-hostname```
+```
+$ ssh -i "hive_docker_setup.pem" ec2-user@my-aws-ip-dns-hostname
+```
 
 Make sure you have hive_docker_setup.pem file placed in the directory from where you are running the command.
 
@@ -94,9 +96,27 @@ $ docker exec -it ra_hive-server bash
 $ hive
 ```
 
+### 7. Add Hive-Spark dependencies
+Download [postgresql-42.3.1.jar JAR](https://jdbc.postgresql.org/download/postgresql-42.3.1.jar) from the internet. Then copy JAR from local machine to EC2 instance by running the below command in your local terminal:
+
+```
+$ scp -r -i "hive_docker_setup.pem" postgresql-42.3.1.jar ec2-user@my-aws-ip-dns-hostname:/home/ec2-user/
+```
+
+[Start the docker containers](#5-start-the-docker-containers-on-ec2-instance) on AWS and run the below commands:
+
+```
+# 1.3.5 copy from home dir to spark/jars dir in spark container
+$ docker cp /home/ec2-user/postgresql-42.3.1.jar hdp_spark-master:/spark/jars
+
+# 2. To copy hive-site.xml from hive and put inside spark conf directory(Run this command from ec2 home directory).
+$ docker cp ra_hive-server:/opt/hive/conf/hive-site.xml /home/ec2-user/
+$ docker cp hive-site.xml hdp_spark-master:/spark/conf/hive-site.xml
+```
+
 <br />
 
-### 7. Shut down and exit commands
+### 8. Shut down and exit commands
 Make sure to run the below commands and stop your EC2 instance once you are done with your job. Because running AWS EC2 instance costs you real money.
 From the ```/home/ec2-user/``` directory in EC2 instance:
 
