@@ -114,6 +114,8 @@ $ docker cp ra_hive-server:/opt/hive/conf/hive-site.xml /home/ec2-user/
 $ docker cp hive-site.xml hdp_spark-master:/spark/conf/hive-site.xml
 ```
 
+This step is essential when we do XML data processing in spark container and load the processed data into a table in Hive container during the data warehouse creation part.
+
 <br />
 
 ### 8. Shut down and exit commands
